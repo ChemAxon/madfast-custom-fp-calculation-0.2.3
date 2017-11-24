@@ -1,0 +1,38 @@
+apply plugin: 'java'
+
+configurations {
+    madfastOriginalPathingJar
+}
+
+dependencies {
+    // Will depend on MadFast distributions's pathing jar
+    // See https://docs.gradle.org/current/userguide/dependency_management.html#sub:file_dependencies
+    // compile files('../madfast-cli-0.2.3/lib/classpath.jar')
+    compile fileTree(dir: '../madfast-cli-0.2.3/lib/', include: '*.jar')
+    
+}
+
+
+task extendedPathingJar(type: Jar) {
+    dependsOn jar
+    archiveName = 'extendedClasspath.jar'
+    doFirst {
+        manifest {
+            attributes "Class-Path": [ jar.archivePath.getName(), '../../../madfast-cli-0.2.3/lib/classpath.jar' ].join(' ')
+        }
+    }
+}
+
+task extendedBins(type: Copy) {
+    dependsOn extendedPathingJar
+    from '../madfast-cli-0.2.3/bin'
+    into 'build/bin'
+    // See https://docs.gradle.org/current/userguide/working_with_files.html#sec:filtering_files
+    filter {
+        
+        String line -> line
+            .replaceAll("lib/classpath.jar", "libs/extendedClasspath.jar")
+            .replaceAll("APP_HOME/lib/overlap-examples-ws-0.2.3-webapp", "APP_HOME/../../madfast-cli-0.2.3/lib/overlap-examples-ws-0.2.3-webapp")
+    }
+}
+

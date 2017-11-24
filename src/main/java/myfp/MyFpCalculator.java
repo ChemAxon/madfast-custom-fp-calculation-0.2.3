@@ -1,0 +1,55 @@
+/*
+ * Copyright 2017 ChemAxon Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package myfp;
+
+import chemaxon.struc.Molecule;
+import com.google.common.base.Function;
+import java.io.Serializable;
+
+/**
+ * A trivial custom fingerprint calculator.
+ * 
+ * This class represents the <b>fingerprint</b> calculation which is the transformation of a chemical structure into a
+ * bit string.
+ * 
+ * A binary fingerprint is calculated for a {@link Molecule} which has the first {@link Molecule#getAtomCount()} bits
+ * set.
+ * 
+ * @author Gabor Imre
+ */
+
+public class MyFpCalculator implements Function<Molecule, long []>, Serializable {
+    
+    public static final int LENGTH_IN_BITS = 128;
+    public static final int LENGTH_IN_LONGS = LENGTH_IN_BITS / Long.SIZE;
+
+    @Override
+    public long[] apply(Molecule m) {
+        final int totalBitsToSet = m.getAtomCount() > LENGTH_IN_BITS ? LENGTH_IN_BITS : m.getAtomCount();
+        final long [] ret = new long[LENGTH_IN_LONGS];
+        
+        for (int i = 0; i < LENGTH_IN_LONGS; i++) {
+            
+            final int remainingBits = Math.max(totalBitsToSet - i * Long.SIZE, 0);
+            final int bitsToSet = Math.min(remainingBits, Long.SIZE);
+            ret[i] = ~0l << (Long.SIZE - bitsToSet);
+        }
+        
+        return ret;
+    }
+    
+}
