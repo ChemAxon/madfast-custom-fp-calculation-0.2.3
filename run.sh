@@ -9,6 +9,7 @@
 mkdir -p tmp/
 
 # Launch compilation and modified launcher script creation
+# Note that Gradle Wrapper will download Gradle distribution, see https://docs.gradle.org/current/userguide/gradle_wrapper.html
 ./gradlew clean extendedBins
 
 # Calculate fingerpints

@@ -6,7 +6,7 @@ that in future release(s) the method of such integration might be changed. Pleas
 non-public APIs.
 
 Feel free to contact us at 
-[disco-support@chemaxon.com](mailto:disco-support@chemaxon.com?subject=Question%20regarding%20github.com/ChemAxon/madfast-custom-cp-calculation-0.2.3)
+[disco-support@chemaxon.com](mailto:disco-support@chemaxon.com?subject=Question%20regarding%20https://github.com/ChemAxon/madfast-custom-fp-calculation-0.2.3)
 with any further questions.
 
 
