@@ -1,12 +1,15 @@
 apply plugin: 'java'
 
 dependencies {
-    // Will depend on MadFast distributions's pathing jar
+    // Will depend on MadFast distributions's classpath
+    // For compilation we could depend on the classpath.jar, however certain IDEs may have problem with dependencies
+    // referenced only by such a pathing jar
     // See https://docs.gradle.org/current/userguide/dependency_management.html#sub:file_dependencies
     compile fileTree(dir: '../madfast-cli-0.2.3/lib/', include: '*.jar')
 }
 
-
+// Create a jar which references in its Manifest Class-Path attribute the pathing jar from the MadFast distribution and
+// the built jar from this project
 task extendedPathingJar(type: Jar) {
     dependsOn jar
     archiveName = 'extendedClasspath.jar'
@@ -17,6 +20,8 @@ task extendedPathingJar(type: Jar) {
     }
 }
 
+// Copy the launcher scripts from the MadFast distribution into build/bin  and modify them to use the extended pathing
+// jar in this project.
 task extendedBins(type: Copy) {
     dependsOn extendedPathingJar
     from '../madfast-cli-0.2.3/bin'
