@@ -36,17 +36,31 @@ import java.io.Serializable;
  * This class represents the integration of the custom fingerprint ({@link MyFpCalculator}) into the Descriptors API
  * which makes this functionality available for MadFast.
  * 
+ * Please note that this class uses non-public ChemAxon APIs. 
+ * 
  * @author Gabor Imre
  */
 public class MyFpGenerator implements DescriptorGenerator<BinaryVectorDescriptor>, Serializable {
 
-    private static final BinaryVectors.Endianness ENDIANNESS = BinaryVectors.Endianness.BIG_ENDIAN;
-    private static final int LENGTH = MyFpCalculator.LENGTH_IN_BITS;
+    /**
+     * The fingerprint calculation.
+     */
     private final Function<Molecule, long[]> calc;
+
+    /**
+     * Length of the calculated fingerprint in bits.
+     */
+    private static final int LENGTH = MyFpCalculator.LENGTH_IN_BITS;
+    
+    
+    private static final BinaryVectors.Endianness ENDIANNESS = BinaryVectors.Endianness.BIG_ENDIAN;
     private final Object guardObject;
     private final BinaryVectorDescriptorSerializer serializer;
     private final BinaryLongComparisonContextFactory comparison;
     
+    /**
+     * Construct.
+     */
     public MyFpGenerator() {
         this.calc = new MyFpCalculator();
         this.guardObject = Guarded.New.guardObject();
