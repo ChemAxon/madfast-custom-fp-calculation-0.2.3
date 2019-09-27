@@ -17,12 +17,18 @@
 
 apply plugin: 'java'
 
+
+ext {
+    // MadFast version to be modified
+    madfastVersion = '0.2.3'
+}
+
 dependencies {
     // Will depend on MadFast distributions's classpath
     // For compilation we could depend on the classpath.jar, however certain IDEs may have problem with dependencies
     // referenced only by such a pathing jar
     // See https://docs.gradle.org/current/userguide/dependency_management.html#sub:file_dependencies
-    compile fileTree(dir: '../madfast-cli-0.2.3/lib/', include: '*.jar')
+    compile fileTree(dir: "../madfast-cli-$madfastVersion/lib/", include: '*.jar')
 }
 
 // Create a jar which references in its Manifest Class-Path attribute the pathing jar from the MadFast distribution and
@@ -32,7 +38,7 @@ task extendedPathingJar(type: Jar) {
     archiveName = 'extendedClasspath.jar'
     doFirst {
         manifest {
-            attributes "Class-Path": [ jar.archivePath.getName(), '../../../madfast-cli-0.2.3/lib/classpath.jar' ].join(' ')
+            attributes "Class-Path": [ jar.archivePath.getName(), "../../../madfast-cli-$madfastVersion/lib/classpath.jar" ].join(' ')
         }
     }
 }
@@ -40,21 +46,24 @@ task extendedPathingJar(type: Jar) {
 // Copy the launcher scripts from the MadFast distribution into build/bin and modify them to use the extended pathing
 // jar in this project.
 task extendedBins(type: Copy) {
+    description "Create modified MadFast launcher scripts in build/bin which include the custom fingerprint from this project"
+    group "Build"
     dependsOn extendedPathingJar
-    from '../madfast-cli-0.2.3/bin'
+    from "../madfast-cli-$madfastVersion/bin"
     into 'build/bin'
     // See https://docs.gradle.org/current/userguide/working_with_files.html#sec:filtering_files
     filter {
         String line -> line
             // Classpath reference
+            // Note that APP_HOME (in the launched scripts) will be relative to the modified script
             .replaceAll( 
                 "lib/classpath.jar",  // The original pathing jar reference from the MadFast distribution
-                "libs/extendedClasspath.jar" // The relatice path to the new pathing jar when launching from the new location 
+                "libs/extendedClasspath.jar" // The relative path to the new pathing jar when launching from the new location 
             )
-            // The webapp war file is not copied, need to reference from the MadFast distribution
+            // The webapp war file is not copied, need to reference from the original MadFast distribution
             .replaceAll(
-                 "APP_HOME/lib/overlap-examples-ws-0.2.3-webapp", 
-                 "APP_HOME/../../madfast-cli-0.2.3/lib/overlap-examples-ws-0.2.3-webapp")
+                 "APP_HOME/lib/overlap-examples-ws-$madfastVersion-webapp", 
+                 "APP_HOME/../../madfast-cli-$madfastVersion/lib/overlap-examples-ws-$madfastVersion-webapp")
     }
 }
 
